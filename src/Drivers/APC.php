@@ -20,7 +20,7 @@ class APC implements IDriver
      *
      * @var string
      */
-    private $prefix;
+    protected $prefix;
 
     /**
      * APC constructor.

@@ -15,7 +15,7 @@ class PCI
     /**
      * @var Cache
      */
-    private $cache;
+    protected $cache;
 
     /**
      * OCI constructor.

@@ -5,6 +5,7 @@
 
 namespace J0sh0nat0r\SimpleCache;
 
+use InvalidArgumentException;
 use J0sh0nat0r\SimpleCache\Exceptions\InvalidKeyException;
 use J0sh0nat0r\SimpleCache\Internal\PCI;
 
@@ -41,14 +42,14 @@ class Cache
      *
      * @var IDriver
      */
-    private $driver;
+    protected $driver;
 
     /**
      * Array containing items that have previously been loaded.
      *
      * @var array
      */
-    private $loaded = [];
+    protected $loaded = [];
 
     /**
      * Cache constructor.
@@ -69,7 +70,7 @@ class Cache
         }
 
         if (!is_array($driver_options)) {
-            throw new \InvalidArgumentException('The `driver_options` argument must be either `null` or an `array`');
+            throw new InvalidArgumentException('The `driver_options` argument must be either `null` or an `array`');
         }
 
         $this->driver = new $driver($driver_options);
@@ -92,7 +93,7 @@ class Cache
         $this->validateKey($key);
 
         if (!is_int($time) && !is_null($time)) {
-            throw new \InvalidArgumentException('`time` must be an integer or null');
+            throw new InvalidArgumentException('`time` must be an integer or null');
         }
 
         $time = is_null($time) ? self::$DEFAULT_TIME : max(0, $time);
@@ -110,7 +111,7 @@ class Cache
         }
 
         if (!is_numeric($time)) {
-            throw new \InvalidArgumentException('Time must be numeric');
+            throw new InvalidArgumentException('Time must be numeric');
         }
 
         $success = $this->driver->put($key, serialize($value), intval($time));
@@ -330,7 +331,7 @@ class Cache
      *
      * @return void
      */
-    private function validateKey($key)
+    protected function validateKey($key)
     {
         if (!is_array($key) && !is_string($key)) {
             throw new InvalidKeyException('The provided key was invalid');

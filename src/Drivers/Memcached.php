@@ -23,7 +23,7 @@ class Memcached implements IDriver
      *
      * @var \Memcached
      */
-    private $pool;
+    protected $pool;
 
     /**
      * Memcached constructor.

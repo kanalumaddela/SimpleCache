@@ -19,7 +19,7 @@ class ArrayDriver implements IDriver
      *
      * @var array[]
      */
-    private $items;
+    protected $items;
 
     /**
      * {@inheritdoc}

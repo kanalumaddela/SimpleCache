@@ -5,6 +5,7 @@
 
 namespace J0sh0nat0r\SimpleCache\Drivers;
 
+use Exception;
 use J0sh0nat0r\SimpleCache\Exceptions\DriverInitializationFailedException;
 use J0sh0nat0r\SimpleCache\Exceptions\DriverOptionsInvalidException;
 use J0sh0nat0r\SimpleCache\IDriver;
@@ -23,14 +24,14 @@ class File implements IDriver
      *
      * @var string
      */
-    private $dir;
+    protected $dir;
 
     /**
      * Key to use when encrypting item data.
      *
      * @var string
      */
-    private $encryption_key;
+    protected $encryption_key;
 
     /**
      * Determines whether or not to encrypt item data,
@@ -38,7 +39,7 @@ class File implements IDriver
      *
      * @var bool
      */
-    private $encrypt_data = false;
+    protected $encrypt_data = false;
 
     /**
      * File driver constructor.
@@ -109,7 +110,7 @@ class File implements IDriver
             $value = $this->encrypt($value, $iv);
 
             if ($value === false) {
-                throw new \Exception('Failed to encrypt item: '.openssl_error_string());
+                throw new Exception('Failed to encrypt item: '.openssl_error_string());
             }
 
             $item_data['iv'] = $iv;
@@ -117,7 +118,7 @@ class File implements IDriver
 
         if ($this->has($key)) {
             if (!$this->remove($key)) {
-                throw new \Exception('Failed to remove pre-existing version of an item with the key: '.$key);
+                throw new Exception('Failed to remove pre-existing version of an item with the key: '.$key);
             }
         }
 
@@ -169,13 +170,13 @@ class File implements IDriver
 
         if ($data['encrypted']) {
             if (!$this->encrypt_data) {
-                throw new \Exception('Item is encrypted but no encryption key was provided');
+                throw new Exception('Item is encrypted but no encryption key was provided');
             }
 
             $value = $this->decrypt($value, $data['iv']);
 
             if ($value === false) {
-                throw new \Exception('Failed to decrypt item: '.openssl_error_string());
+                throw new Exception('Failed to decrypt item: '.openssl_error_string());
             }
         }
 
@@ -219,7 +220,7 @@ class File implements IDriver
      *
      * @return string Directory for the given key
      */
-    private function getDir($key)
+    protected function getDir($key)
     {
         return $this->dir.'/'.sha1($key);
     }
@@ -231,7 +232,7 @@ class File implements IDriver
      *
      * @return bool TRUE on success, FALSE on failure
      */
-    private function delDir($directory)
+    protected function delDir($directory)
     {
         $success = true;
         $contents = array_slice(scandir($directory), 2);
@@ -258,7 +259,7 @@ class File implements IDriver
      *
      * @return bool
      */
-    private function isValid($dir)
+    protected function isValid($dir)
     {
         if (!is_dir($dir)) {
             return false;
@@ -277,7 +278,7 @@ class File implements IDriver
      *
      * @return array|null
      */
-    private function getData($key)
+    protected function getData($key)
     {
         $dir = $this->getDir($key);
 
@@ -293,7 +294,7 @@ class File implements IDriver
      *
      * @param \Closure $callback Callback
      */
-    private function forAll($callback)
+    protected function forAll($callback)
     {
         foreach (glob($this->dir.'/*', GLOB_ONLYDIR) as $item) {
             if ($this->isValid($item)) {
@@ -309,7 +310,7 @@ class File implements IDriver
      *
      * @return bool True if the item is expired, otherwise, false
      */
-    private function expired($key)
+    protected function expired($key)
     {
         $data = $this->getData($key);
 
@@ -330,7 +331,7 @@ class File implements IDriver
      *
      * @return string
      */
-    private function encrypt($data, &$iv)
+    protected function encrypt($data, &$iv)
     {
         $iv = bin2hex(openssl_random_pseudo_bytes(8));
 
@@ -345,7 +346,7 @@ class File implements IDriver
      *
      * @return string
      */
-    private function decrypt($data, $iv)
+    protected function decrypt($data, $iv)
     {
         return openssl_decrypt($data, 'aes-256-cbc', $this->encryption_key, 0, $iv);
     }

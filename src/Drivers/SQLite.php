@@ -19,8 +19,8 @@ use SQLite3;
  */
 class SQLite implements IDriver
 {
-    private $db;
-    private $table_name = 'cache';
+    protected $db;
+    protected $table_name = 'cache';
 
     /**
      * SQLite driver constructor.
@@ -155,7 +155,7 @@ class SQLite implements IDriver
      *
      * @return bool
      */
-    private function clearExpiredItems()
+    protected function clearExpiredItems()
     {
         return (bool) $this->db->query(
             "DELETE FROM \"$this->table_name\" WHERE e <= strftime('%s','now') AND e > 0"

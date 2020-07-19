@@ -24,7 +24,7 @@ class Redis implements IDriver
      *
      * @var \Redis
      */
-    private $redis;
+    protected $redis;
 
     /**
      * Redis constructor.
